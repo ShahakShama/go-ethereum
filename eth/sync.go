@@ -179,6 +179,7 @@ func (cs *chainSyncer) nextSyncOp() *chainSyncOp {
 	// We have enough peers, pick the one with the highest TD, but avoid going
 	// over the terminal total difficulty. Above that we expect the consensus
 	// clients to direct the chain head to sync to.
+    ~@ Here we determine who is the next peer that we will sync with.
 	peer := cs.handler.peers.peerWithHighestTD()
 	if peer == nil {
 		return nil
@@ -232,6 +233,7 @@ func (cs *chainSyncer) startSync(op *chainSyncOp) {
 }
 
 // doSync synchronizes the local blockchain with a remote peer.
+~@ Doing a sync with the given peer. The peer is given via `op.peer.ID()`.
 func (h *handler) doSync(op *chainSyncOp) error {
 	if op.mode == downloader.SnapSync {
 		// Before launch the snap sync, we have to ensure user uses the same

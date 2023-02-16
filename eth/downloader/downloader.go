@@ -450,6 +450,7 @@ func (d *Downloader) getMode() SyncMode {
 
 // syncWithPeer starts a block synchronization based on the hash chain from the
 // specified peer and head hash.
+~@ The actual function that does the sync.
 func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td, ttd *big.Int, beaconMode bool) (err error) {
 	d.mux.Post(StartEvent{})
 	defer func() {
@@ -476,6 +477,7 @@ func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td, ttd *
 	var latest, pivot *types.Header
 	if !beaconMode {
 		// In legacy mode, use the master peer to retrieve the headers from
+        ~@ At first, get the head block of the peer.
 		latest, pivot, err = d.fetchHead(p)
 		if err != nil {
 			return err
@@ -521,6 +523,7 @@ func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td, ttd *
 	height := latest.Number.Uint64()
 
 	var origin uint64
+    ~@ find the common ancestor of our chain and the peers chain.
 	if !beaconMode {
 		// In legacy mode, reach out to the network and find the ancestor
 		origin, err = d.findAncestor(p, latest)
@@ -603,6 +606,7 @@ func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td, ttd *
 	if d.syncInitHook != nil {
 		d.syncInitHook(origin, height)
 	}
+    ~@ Fetch the headers from origin to head.
 	var headerFetcher func() error
 	if !beaconMode {
 		// In legacy mode, headers are retrieved from the network
@@ -985,6 +989,8 @@ func (d *Downloader) findAncestorBinarySearch(p *peerConnection, mode SyncMode, 
 	return start, nil
 }
 
+~@ Here, the other peers get into the picture.
+~@ Stopped here. Need to figure out what does this function do and then understand what is TD.
 // fetchHeaders keeps retrieving headers concurrently from the number
 // requested, until no more are returned, potentially throttling on the way. To
 // facilitate concurrency but still protect against malicious nodes sending bad

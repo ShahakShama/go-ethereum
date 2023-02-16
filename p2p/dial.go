@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
+~@ Dial is connecting to a single peer and getting data from it.
 package p2p
 
 import (
@@ -90,6 +90,8 @@ var (
 //   - dynamic dials are created from node discovery results. The dialer
 //     continuously reads candidate nodes from its input iterator and attempts
 //     to create peer connections to nodes arriving through the iterator.
+~@ We can only have a given amount of connections open simultaneously. The dialScheduler is responsible
+~@ to decide to which peers are we dialing (between discovered peers and statically defined peers).
 type dialScheduler struct {
 	dialConfig
 	setupFunc   dialSetupFunc
