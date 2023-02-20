@@ -990,7 +990,6 @@ func (d *Downloader) findAncestorBinarySearch(p *peerConnection, mode SyncMode, 
 }
 
 ~@ Here, the other peers get into the picture.
-~@ Stopped here. Need to figure out what does this function do and then understand what is TD.
 // fetchHeaders keeps retrieving headers concurrently from the number
 // requested, until no more are returned, potentially throttling on the way. To
 // facilitate concurrency but still protect against malicious nodes sending bad
@@ -1027,6 +1026,13 @@ func (d *Downloader) fetchHeaders(p *peerConnection, from uint64, head uint64) e
 			d.pivotLock.RUnlock()
 
 			p.log.Trace("Fetching next pivot header", "number", pivot+uint64(fsMinFullBlocks))
+            ~@ fetchHeadrsByNumber has the following parameters:
+            ~@ p
+            ~@ number: Starting block
+            ~@ amount: amount of headers to get
+            ~@ skip: amount of space between each header gotten (if amount is 2 and skip is 3,
+            ~@    the function will return the blocks \number\ and \number + 3\)
+            ~@ reverse: if False, bring blocks that are >= number, otherwise, bring blocks that are <= number.
 			headers, hashes, err = d.fetchHeadersByNumber(p, pivot+uint64(fsMinFullBlocks), 2, fsMinFullBlocks-9, false) // move +64 when it's 2x64-8 deep
 
 		case skeleton:
@@ -1207,6 +1213,8 @@ func (d *Downloader) fetchHeaders(p *peerConnection, from uint64, head uint64) e
 		}
 		// If we're still skeleton filling snap sync, check pivot staleness
 		// before continuing to the next skeleton filling
+        ~@ It seems like the only way for pivot to get non-zero value is when pivoting is true,
+        ~@ which means pivoting is always false. Need to understand this.
 		if skeleton && pivot > 0 {
 			pivoting = true
 		}

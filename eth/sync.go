@@ -115,6 +115,7 @@ func (cs *chainSyncer) loop() {
 	defer cs.force.Stop()
 
 	for {
+        ~@ In post merge (PoS instead of PoW), nextSyncOp will always return nil.
 		if op := cs.nextSyncOp(); op != nil {
 			cs.startSync(op)
 		}
